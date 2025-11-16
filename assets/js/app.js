@@ -1,4 +1,3 @@
-// === Shared data & placeholders ===
 const sampleImages = [
   'https://via.placeholder.com/800x600.png?text=MRI+Sample+1',
   'https://via.placeholder.com/800x600.png?text=MRI+Sample+2',
@@ -7,7 +6,7 @@ const sampleImages = [
   'https://via.placeholder.com/800x600.png?text=MRI+Sample+5'
 ];
 
-// Load history and currentResult from localStorage or use defaults
+
 let historyData = JSON.parse(localStorage.getItem('brain_history')) || [
   {
     id: '1',
@@ -32,7 +31,7 @@ let historyData = JSON.parse(localStorage.getItem('brain_history')) || [
   }
 ];
 
-// default / mock current results (will be set after analysis)
+
 let currentResult = JSON.parse(localStorage.getItem('brain_current')) || {
   tumorType: 'Benign',
   confidence: 94,
@@ -47,7 +46,6 @@ let currentResult = JSON.parse(localStorage.getItem('brain_current')) || {
   notes: 'The detected tumor shows characteristics consistent with a benign growth. Recommend follow-up scan in 6 months.'
 };
 
-// === HOME: gallery & features render ===
 function renderHomeSections() {
   const g = document.getElementById('sampleGallery');
   if (!g) return;
@@ -74,7 +72,6 @@ function renderHomeSections() {
   });
 }
 
-// === SCAN MODULE: camera + upload + analyze ===
 function initScanModule(){
   const startBtn = document.getElementById('startBtn');
   const stopBtn = document.getElementById('stopBtn');
@@ -95,7 +92,7 @@ function initScanModule(){
   const analyzeBtn = document.getElementById('analyzeBtn');
   const scanResult = document.getElementById('scanResult');
 
-  if (!startBtn || !analyzeBtn) return; // Not on scan page
+  if (!startBtn || !analyzeBtn) return; 
 
   let stream = null;
   let currentFile = null;
@@ -150,7 +147,6 @@ function initScanModule(){
     nameEl.textContent = file.name || 'image';
   }
 
-  // drag & drop
   dropArea.addEventListener('click', ()=> fileInput.click());
   dropArea.addEventListener('dragover', e=>{ e.preventDefault(); dropArea.classList.add('dragover'); });
   dropArea.addEventListener('dragleave', ()=> dropArea.classList.remove('dragover'));
@@ -171,10 +167,8 @@ function initScanModule(){
 
   analyzeBtn.addEventListener('click', ()=> {
     if(!currentFile) return alert('Please upload or capture an MRI scan first.');
-    // simulated analysis
     scanResult.innerHTML = `<div class="note info">Analyzing... (simulated)</div>`;
     setTimeout(()=>{
-      // create a result from current file
       const imageUrl = URL.createObjectURL(currentFile);
       currentResult = {
         tumorType: Math.random() > 0.6 ? 'Malignant' : 'Benign',
@@ -189,7 +183,6 @@ function initScanModule(){
         scanDate: new Date().toLocaleDateString(),
         notes: 'Simulated note: follow-up recommended.'
       };
-      // add to history
       historyData.unshift({
         id: currentResult.id,
         imageUrl: currentResult.imageUrl,
@@ -197,23 +190,18 @@ function initScanModule(){
         confidence: currentResult.confidence,
         date: currentResult.scanDate
       });
-      // save to localStorage
       localStorage.setItem('brain_history', JSON.stringify(historyData));
       localStorage.setItem('brain_current', JSON.stringify(currentResult));
-      // redirect to results
       location.href = 'results.html';
     }, 1400);
   });
 
-  // small accessibility: keyboard for drop area
   if(dropArea){
     dropArea.addEventListener('keydown', e=> { if(e.key==='Enter' || e.key===' ') { e.preventDefault(); fileInput.click(); } });
   }
 }
 
-// === RESULTS UI render ===
 function renderResultsUI(result){
-  // fill UI elements
   const resultImage = document.getElementById('resultImage');
   if (resultImage) resultImage.src = result.imageUrl || sampleImages[0];
   const resultLocation = document.getElementById('resultLocation');
@@ -231,7 +219,6 @@ function renderResultsUI(result){
   const impactBar = document.getElementById('impactBar');
   if (impactBar) setTimeout(()=> { impactBar.style.width = result.impactLevel + '%'; }, 140);
 
-  // summary
   const sumType = document.getElementById('sumType');
   if (sumType) sumType.textContent = result.tumorType;
   const sumLoc = document.getElementById('sumLoc');
@@ -246,7 +233,6 @@ function renderResultsUI(result){
   if (downloadReportBtn) downloadReportBtn.addEventListener('click', ()=> downloadReport(result));
 }
 
-// download simple report (text)
 function downloadReport(result){
   const now = new Date().toISOString();
   const text = [
@@ -267,7 +253,6 @@ function downloadReport(result){
   const a = document.createElement('a'); a.href = url; a.download = `brain-report-${result.id}.txt`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
 }
 
-// === HISTORY ===
 function renderHistory(){
   const list = document.getElementById('historyList');
   if (!list) return;
@@ -285,7 +270,6 @@ function renderHistory(){
   });
 }
 
-// modal for history / gallery
 const modal = document.getElementById('historyModal');
 const modalImg = document.getElementById('modalImg');
 const modalInfo = document.getElementById('modalInfo');
@@ -303,7 +287,6 @@ function closeModal(){
 if (modalClose) modalClose.addEventListener('click', closeModal);
 if (modal) modal.addEventListener('click', e=>{ if(e.target===modal) closeModal(); });
 
-// === ABOUT features render & stats animation ===
 function renderAboutFeatures(){
   const f = [
     {icon:'🛡️', title:'HIPAA Compliant', description:'All patient data is encrypted and securely stored'},
@@ -328,14 +311,11 @@ function animateStats(){
   });
 }
 
-// === REPORT page render / print / download ===
 function renderReportFromQuery(){
   const params = new URLSearchParams(location.search);
   const id = params.get('id') || currentResult.id || '1';
-  // Find the result by id from history or use currentResult
   let r = historyData.find(h => h.id === id) || currentResult;
   if (!r || r.id !== id) r = currentResult; // fallback
-  // set report fields
   const reportImg = document.getElementById('reportImg');
   if (reportImg) reportImg.src = r.imageUrl || sampleImages[0];
   const ids = ['reportPatient','reportDate','reportLoc','rTumorType','rLocation','rSize','rConfidence','rCells','rId','rNotes'];
@@ -354,7 +334,6 @@ function renderReportFromQuery(){
   ids.forEach(idk=>{ const el = document.getElementById(idk); if(el) el.textContent = mapping[idk]; });
 }
 
-// print & download handlers
 const printReportBtn = document.getElementById('printReportBtn');
 if (printReportBtn) printReportBtn.addEventListener('click', ()=> window.print());
 const dlReportBtn = document.getElementById('dlReportBtn');
@@ -383,7 +362,6 @@ if (dlReportBtn) dlReportBtn.addEventListener('click', ()=> {
   const a = document.createElement('a'); a.href = url; a.download = `brain-report-${r.id}.txt`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
 });
 
-// Make functions global
 window.renderHomeSections = renderHomeSections;
 window.initScanModule = initScanModule;
 window.renderHistory = renderHistory;
@@ -393,3 +371,4 @@ window.downloadReport = downloadReport;
 window.openModal = openModal;
 window.animateStats = animateStats;
 window.renderAboutFeatures = renderAboutFeatures;
+
