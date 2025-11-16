@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Brain — MRI AI Platform (Home)</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">Brain Tumor Analysis</a>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="scan.html">Scan</a>
+        <a href="results.html">Results</a>
+        <a href="history.html">History</a>
+        <a href="about.html">About</a>
+        <a href="report.html?id=1">Report</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="app" class="container">
+    <!-- HOME (Hero + Gallery + Features + CTA) -->
+    <section id="home" class="page">
+      <section class="hero card">
+        <div class="hero-inner">
+          <div class="hero-logo" aria-hidden="true">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none"><path d="M4 12c0-3.3 2.7-6 6-6s6 2.7 6 6v4H4v-4z" fill="white"/></svg>
+          </div>
+          <h1>Brain</h1>
+          <p class="lead">AI-powered platform for detecting brain tumors and analyzing cell impact.</p>
+          <a href="scan.html" class="btn primary">Start Scan</a>
+        </div>
+      </section>
+
+      <section class="card gallery-section">
+        <h2>Sample MRI Scans</h2>
+        <div id="sampleGallery" class="gallery-grid"></div>
+      </section>
+
+      <section class="card features-section">
+        <h2>How Brain Works</h2>
+        <div class="features-grid" id="featuresGrid"></div>
+      </section>
+
+      <section class="card cta-section">
+        <h2>Ready to Analyze Your MRI Scan?</h2>
+        <p class="lead">Upload or capture your brain MRI scan and get AI-powered analysis.</p>
+        <a href="scan.html" class="btn outline">Get Started</a>
+      </section>
+    </section>
+  </main>
+
+  <!-- Modal for history item -->
+  <div id="historyModal" class="modal" role="dialog" aria-hidden="true">
+    <div class="modal-card">
+      <button id="modalClose" class="modal-close">✕</button>
+      <img id="modalImg" src="" alt="Scan large"/>
+      <div id="modalInfo" class="modal-info"></div>
+    </div>
+  </div>
+
+  <script src="assets/js/app.js" defer></script>
+  <script>
+    window.addEventListener('load', () => {
+      renderHomeSections();
+      animateStats();
+    });
+  </script>
+</body>
+</html>

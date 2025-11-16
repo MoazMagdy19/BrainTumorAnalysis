@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Brain — MRI AI Platform (Scan)</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">Brain Tumor Analysis</a>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="scan.html">Scan</a>
+        <a href="results.html">Results</a>
+        <a href="history.html">History</a>
+        <a href="about.html">About</a>
+        <a href="report.html?id=1">Report</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="app" class="container">
+    <!-- SCAN (camera + upload) -->
+    <section id="scan" class="page">
+      <div class="card">
+        <h2>Upload MRI Scan</h2>
+        <p class="lead">Capture a photo or upload an MRI scan image. (Demo — no real AI)</p>
+
+        <div class="grid two-col">
+          <!-- Camera -->
+          <div class="card-inner">
+            <div class="section-title">Camera Capture</div>
+            <div class="video-wrap" id="videoWrap">
+              <div class="video-placeholder" id="videoPlaceholder">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none"><path d="M4 7h11v10H4z" stroke="#bbb" stroke-width="1.4"/></svg>
+                <div>Camera preview will appear here</div>
+              </div>
+              <video id="preview" autoplay playsinline style="display:none"></video>
+            </div>
+
+            <div class="controls">
+              <button id="startBtn" class="btn primary">Start Camera</button>
+              <button id="captureBtn" class="btn ghost" disabled>Capture Photo</button>
+              <button id="stopBtn" class="btn ghost" disabled>Stop</button>
+            </div>
+
+            <div id="cameraMeta" class="meta" style="display:none">
+              <img id="capturedThumb" class="thumb" alt="Captured preview"/>
+              <div>
+                <div id="capturedName">captured-mri.jpg</div>
+                <div class="muted">Captured from camera</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Upload -->
+          <div class="card-inner">
+            <div class="section-title">Upload / Drag & Drop</div>
+            <div id="dropArea" class="area" tabindex="0" role="button" aria-label="Upload or drag and drop file">
+              <div>
+                <svg width="56" height="56" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="#2563eb" stroke-width="1.6"/><path d="M7 10l5-5 5 5" stroke="#2563eb" stroke-width="1.6"/></svg>
+                <div style="margin-top:10px;font-weight:600">Drag & drop your MRI scan here</div>
+                <div class="muted" style="margin-top:6px">or click to browse</div>
+              </div>
+            </div>
+
+            <input id="fileInput" type="file" accept="image/*,.dcm" style="display:none"/>
+
+            <div class="meta" id="uploadMeta" style="display:none">
+              <img class="thumb" id="uploadThumb" alt="Upload preview"/>
+              <div>
+                <div id="uploadName" class="file-name"></div>
+                <div class="muted">Uploaded file</div>
+              </div>
+            </div>
+
+            <div class="controls" style="margin-top:12px">
+              <button id="browseBtn" class="btn ghost">Browse Files</button>
+              <button id="clearBtn" class="btn ghost" style="display:none">Clear</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="analyze-wrap" style="text-align:center;margin-top:16px">
+          <button id="analyzeBtn" class="btn primary" disabled>Analyze Scan</button>
+          <div class="muted" style="margin-top:6px">Analysis is simulated in this demo.</div>
+        </div>
+
+        <div id="scanResult" style="margin-top:18px"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/app.js" defer></script>
+  <script>
+    window.addEventListener('load', () => {
+      initScanModule();
+    });
+  </script>
+</body>
+</html>

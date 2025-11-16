@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Brain — MRI AI Platform (Results)</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">Brain Tumor Analysis</a>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="scan.html">Scan</a>
+        <a href="results.html">Results</a>
+        <a href="history.html">History</a>
+        <a href="about.html">About</a>
+        <a href="report.html?id=1">Report</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="app" class="container">
+    <!-- RESULTS -->
+    <section id="results" class="page">
+      <div class="card">
+        <h2>Analysis Results</h2>
+        <p class="lead">Your MRI scan has been analyzed. Review the results below.</p>
+
+        <div class="grid two-col">
+          <div>
+            <div class="card-inner result-preview">
+              <h3>Tumor Location Preview</h3>
+              <div class="aspect-video preview-image" id="resultImageWrap">
+                <img id="resultImage" src="" alt="MRI preview"/>
+                <div class="highlight pulse" aria-hidden="true"><div class="blur"></div><div class="ring"></div></div>
+                <div class="badge" id="resultLocation">Frontal Lobe</div>
+              </div>
+            </div>
+
+            <div class="card-inner">
+              <h3>Tumor Classification</h3>
+              <div class="row-between">
+                <div>
+                  <div id="resultType" style="font-weight:800">Benign</div>
+                  <div class="muted">Tumor Type</div>
+                </div>
+                <div style="width:220px">
+                  <div class="muted" style="display:flex;justify-content:space-between"><span>Confidence</span><span id="resultConfidence" class="muted">94%</span></div>
+                  <div style="height:8px"></div>
+                  <div class="progress-wrap"><div id="resultConfBar" class="progress-bar" style="width:0%"></div></div>
+                </div>
+              </div>
+              <div style="height:12px"></div>
+              <div id="classificationNote" class="note success">The tumor appears to be benign with high confidence. Consult with your healthcare provider.</div>
+            </div>
+
+            <div class="card-inner">
+              <h3>Cell Impact Analysis</h3>
+              <div class="row-between">
+                <div>
+                  <div id="cellsAffected" style="font-weight:700">No</div>
+                  <div class="muted">Surrounding Cells Affected</div>
+                </div>
+                <div style="width:220px">
+                  <div class="muted" style="display:flex;justify-content:space-between"><span>Impact</span><span id="impactVal" class="muted">15%</span></div>
+                  <div style="height:8px"></div>
+                  <div class="progress-wrap"><div id="impactBar" class="progress-bar alt" style="width:0%"></div></div>
+                </div>
+              </div>
+              <div style="height:12px"></div>
+              <div class="note info">Minimal impact detected on surrounding tissue. The tumor appears to be well-contained.</div>
+            </div>
+          </div>
+
+          <aside>
+            <div class="card-inner sticky summary-panel">
+              <h3>Summary</h3>
+              <div class="summary-row"><span class="muted">Tumor Type</span><span id="sumType" class="good">Benign</span></div>
+              <div class="summary-row"><span class="muted">Location</span><span id="sumLoc">Frontal Lobe</span></div>
+              <div class="summary-row"><span class="muted">Size</span><span id="sumSize">2.3 cm</span></div>
+              <div class="summary-row"><span class="muted">Confidence</span><span id="sumConf" style="color:var(--blue)">94%</span></div>
+              <div class="summary-row"><span class="muted">Cells Affected</span><span id="sumCells" class="good">No</span></div>
+
+              <div style="margin-top:12px">
+                <button id="downloadReportBtn" class="btn primary">⬇ Download Report</button>
+                <a href="history.html"><button class="btn ghost" style="margin-top:8px">View History</button></a>
+              </div>
+              <div class="small muted" style="margin-top:10px">Demo report — consult a specialist for clinical decisions.</div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/app.js" defer></script>
+  <script>
+    window.addEventListener('load', () => {
+      renderResultsUI(currentResult);
+    });
+  </script>
+</body>
+</html>

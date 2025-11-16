@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Brain — MRI AI Platform (History)</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">Brain Tumor Analysis</a>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="scan.html">Scan</a>
+        <a href="results.html">Results</a>
+        <a href="history.html">History</a>
+        <a href="about.html">About</a>
+        <a href="report.html?id=1">Report</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="app" class="container">
+    <!-- HISTORY -->
+    <section id="history" class="page">
+      <div class="card">
+        <div class="header-row">
+          <div>
+            <h2>Scan History</h2>
+            <p class="muted">View all your previous MRI scan analyses</p>
+          </div>
+          <a href="scan.html" class="btn primary">+ New Scan</a>
+        </div>
+
+        <div id="historyList" class="history-list"></div>
+
+        <template id="emptyHistoryTpl">
+          <div class="empty-state">
+            <h3>No scans yet</h3>
+            <p class="muted">Start by uploading your first MRI scan</p>
+            <a href="scan.html" class="btn primary">Upload Scan</a>
+          </div>
+        </template>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal for history item -->
+  <div id="historyModal" class="modal" role="dialog" aria-hidden="true">
+    <div class="modal-card">
+      <button id="modalClose" class="modal-close">✕</button>
+      <img id="modalImg" src="" alt="Scan large"/>
+      <div id="modalInfo" class="modal-info"></div>
+    </div>
+  </div>
+
+  <script src="assets/js/app.js" defer></script>
+  <script>
+    window.addEventListener('load', () => {
+      renderHistory();
+    });
+  </script>
+</body>
+</html>

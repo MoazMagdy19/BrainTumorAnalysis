@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Brain — MRI AI Platform (About)</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">Brain Tumor Analysis</a>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="scan.html">Scan</a>
+        <a href="results.html">Results</a>
+        <a href="history.html">History</a>
+        <a href="about.html">About</a>
+        <a href="report.html?id=1">Report</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="app" class="container">
+    <!-- ABOUT -->
+    <section id="about" class="page">
+      <div class="card">
+        <div class="center">
+          <div class="hero-logo small" aria-hidden="true"><svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M4 12c0-3.3 2.7-6 6-6s6 2.7 6 6v4H4v-4z" fill="white"/></svg></div>
+          <h2>About Brain</h2>
+          <p class="lead">Advancing medical diagnostics through AI to detect and analyze brain tumors with precision & speed.</p>
+        </div>
+
+        <div class="sections">
+          <div class="section-item">
+            <div class="icon-box">🎯</div>
+            <div>
+              <h3>Our Mission</h3>
+              <p>Brain aims to revolutionize brain tumor detection and analysis... (see full text in code).</p>
+            </div>
+          </div>
+
+          <div class="section-item">
+            <div class="icon-box">🧠</div>
+            <div>
+              <h3>Technology</h3>
+              <p>Our platform utilizes state-of-the-art deep learning algorithms trained on thousands of MRI scans.</p>
+            </div>
+          </div>
+
+          <div class="section-item">
+            <div class="icon-box">📈</div>
+            <div>
+              <h3>Accuracy & Performance</h3>
+              <p>Brain achieves a 94% accuracy rate in tumor detection and classification, validated through trials.</p>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="margin-top:18px">Key Features</h3>
+        <div class="features-grid compact" id="aboutFeatures"></div>
+
+        <div class="stats card-inner" style="margin-top:18px">
+          <div class="stats-grid">
+            <div><div class="stat-value" data-target="94">0%</div><div class="muted">Accuracy Rate</div></div>
+            <div><div class="stat-value" data-target="2">0s</div><div class="muted">Processing Time (avg)</div></div>
+            <div><div class="stat-value" data-target="10000">0</div><div class="muted">Scans Analyzed</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/app.js" defer></script>
+  <script>
+    window.addEventListener('load', () => {
+      renderAboutFeatures();
+      animateStats();
+    });
+  </script>
+</body>
+</html>
