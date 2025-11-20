@@ -1,103 +1,306 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Brain — MRI AI Platform </title>
-  <link rel="stylesheet" href="assets/css/style.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Analysis Results — Brain</title>
+  <style>
+    :root{
+      --blue:#2563eb;
+      --bg:#f6f8fb;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --success:#16a34a;
+      --danger:#dc2626;
+      --max-w:1200px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:var(--bg);color:#0f172a}
+    .wrap{max-width:var(--max-w);margin:28px auto;padding:20px}
+    .text-center{text-align:center}
+    h1{margin:0 0 6px;font-size:22px}
+    p.lead{margin:0;color:var(--muted)}
+    .grid{display:grid;gap:18px;grid-template-columns:2fr 1fr}
+    @media(max-width:980px){ .grid{grid-template-columns:1fr} }
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 10px 30px rgba(2,6,23,0.06)}
+    .result-card{border-radius:12px;padding:0;overflow:hidden}
+    .aspect-video{position:relative;padding-top:56.25%;background:#111}
+    .aspect-video img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+    .overlay-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+    .pulse {position:relative;width:96px;height:96px}
+    .pulse .blur {position:absolute;inset:0;border-radius:999px;background:#ef4444;filter:blur(20px);opacity:0.35;animation: pulse 2s infinite}
+    .pulse .ring {position:absolute;inset:0;border-radius:999px;border:4px solid #ef4444;box-sizing:border-box}
+    @keyframes pulse {0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+    .badge {position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.7);color:white;padding:8px 10px;border-radius:10px;font-weight:600}
+    .section {margin-bottom:16px}
+    .flex {display:flex;align-items:center;gap:12px}
+    .justify-between {display:flex;justify-content:space-between;align-items:center}
+    .icon-box{width:44px;height:44px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(180deg,var(--blue),#1e40af);color:white}
+    .result-meta {display:flex;flex-direction:column;gap:8px}
+    .large-icon{width:56px;height:56px}
+    .progress-wrap{background:#eef2ff;border-radius:999px;height:12px;overflow:hidden}
+    .progress-bar{height:100%;background:var(--blue);width:0%;transition:width .6s ease}
+    .progress-text{font-weight:700}
+    .sticky {position:sticky;top:24px}
+    .summary-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f1f5f9}
+    .summary-row:last-child{border-bottom:0}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;border:0;cursor:pointer;font-weight:700}
+    .btn.primary{background:var(--blue);color:white}
+    .btn.ghost{background:transparent;border:1px solid #e6eefb;color:var(--blue)}
+    .muted{color:var(--muted);font-size:13px}
+    .good{color:var(--success);font-weight:700}
+    .bad{color:var(--danger);font-weight:700}
+    .small{font-size:13px;color:var(--muted)}
+  </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="container header-inner">
-      <a href="index.html" class="logo">NeuroSight</a>
-      <nav class="nav">
-        <a href="index.html">Home</a>
-        <a href="scan.html">Scan</a>
-        <a href="history.html">History</a>
-        <a href="about.html">About</a>
-      </nav>
+  <div class="wrap">
+    <div class="text-center section">
+      <h1>Analysis Results</h1>
+      <p class="lead">Your MRI scan has been analyzed. Review the results below.</p>
     </div>
-  </header>
 
-  <main id="app" class="container">
-    <section id="results" class="page">
-      <div class="card">
-        <h2>Analysis Results</h2>
-        <p class="lead">Your MRI scan has been analyzed. Review the results below.</p>
-
-        <div class="grid two-col">
-          <div>
-            <div class="card-inner result-preview">
-              <h3>Tumor Location Preview</h3>
-              <div class="aspect-video preview-image" id="resultImageWrap">
-                <img id="resultImage" src="" alt="MRI preview"/>
-                <div class="highlight pulse" aria-hidden="true"><div class="blur"></div><div class="ring"></div></div>
-                <div class="badge" id="resultLocation">Frontal Lobe</div>
+    <div class="grid">
+      
+      <div style="display:flex;flex-direction:column;gap:14px">
+        
+        <div class="card result-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px">
+            <div class="flex">
+              <div class="icon-box" aria-hidden="true">
+              
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 11.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 2s6 4.5 6 10.5S12 22 12 22 6 16.5 6 12 12 2 12 2z" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div style="margin-left:12px">
+                <div style="font-weight:700">Tumor Location Preview</div>
+                <div class="small muted">Visual preview with highlighted region</div>
               </div>
             </div>
-
-            <div class="card-inner">
-              <h3>Tumor Classification</h3>
-              <div class="row-between">
-                <div>
-                  <div id="resultType" style="font-weight:800">Benign</div>
-                  <div class="muted">Tumor Type</div>
-                </div>
-                <div style="width:220px">
-                  <div class="muted" style="display:flex;justify-content:space-between"><span>Confidence</span><span id="resultConfidence" class="muted">94%</span></div>
-                  <div style="height:8px"></div>
-                  <div class="progress-wrap"><div id="resultConfBar" class="progress-bar" style="width:0%"></div></div>
-                </div>
-              </div>
-              <div style="height:12px"></div>
-              <div id="classificationNote" class="note success">The tumor appears to be benign with high confidence. Consult with your healthcare provider.</div>
-            </div>
-
-            <div class="card-inner">
-              <h3>Cell Impact Analysis</h3>
-              <div class="row-between">
-                <div>
-                  <div id="cellsAffected" style="font-weight:700">No</div>
-                  <div class="muted">Surrounding Cells Affected</div>
-                </div>
-                <div style="width:220px">
-                  <div class="muted" style="display:flex;justify-content:space-between"><span>Impact</span><span id="impactVal" class="muted">15%</span></div>
-                  <div style="height:8px"></div>
-                  <div class="progress-wrap"><div id="impactBar" class="progress-bar alt" style="width:0%"></div></div>
-                </div>
-              </div>
-              <div style="height:12px"></div>
-              <div class="note info">Minimal impact detected on surrounding tissue. The tumor appears to be well-contained.</div>
-            </div>
+            <div class="small muted">Scan ID: #1</div>
           </div>
 
-          <aside>
-            <div class="card-inner sticky summary-panel">
-              <h3>Summary</h3>
-              <div class="summary-row"><span class="muted">Tumor Type</span><span id="sumType" class="good">Benign</span></div>
-              <div class="summary-row"><span class="muted">Location</span><span id="sumLoc">Frontal Lobe</span></div>
-              <div class="summary-row"><span class="muted">Size</span><span id="sumSize">2.3 cm</span></div>
-              <div class="summary-row"><span class="muted">Confidence</span><span id="sumConf" style="color:var(--blue)">94%</span></div>
-              <div class="summary-row"><span class="muted">Cells Affected</span><span id="sumCells" class="good">No</span></div>
-
-              <div style="margin-top:12px">
-                <button id="downloadReportBtn" class="btn primary">⬇ Download Report</button>
-                <a href="history.html"><button class="btn ghost" style="margin-top:8px">View History</button></a>
+          <div class="aspect-video" style="background:#111">
+            <img id="previewImg" src="" alt="MRI Scan" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%221000%22 height=%22600%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%23111%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%23bbb%22 font-size=%2236%22 font-family=%22Arial%22 text-anchor=%22middle%22 dy=%22.35em%22>Image unavailable</text></svg>'" />
+            <div class="overlay-center">
+              <div class="pulse">
+                <div class="blur"></div>
+                <div class="ring"></div>
               </div>
-              <div class="small muted" style="margin-top:10px">Demo report — consult a specialist for clinical decisions.</div>
             </div>
-          </aside>
+            <div class="badge" id="locationBadge">Frontal Lobe</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="padding:14px">
+            <div class="justify-between" style="margin-bottom:12px">
+              <div class="flex">
+                <div class="large-icon" aria-hidden="true">
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94A2 2 0 0 0 22 18L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="#111" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div style="margin-left:12px">
+                  <div style="font-weight:700">Tumor Classification</div>
+                  <div class="small muted">Automated classification result</div>
+                </div>
+              </div>
+              <div id="typeIconArea"></div>
+            </div>
+
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+              <div style="flex:1">
+                <div class="small muted">Tumor Type</div>
+                <div id="tumorTypeText" style="font-weight:800;font-size:18px;margin-top:6px">Benign</div>
+              </div>
+              <div style="width:220px">
+                <div class="small muted" style="display:flex;justify-content:space-between"><span>Confidence Level</span><span id="confPercent" class="small" style="color:var(--blue)">94%</span></div>
+                <div style="height:8px"></div>
+                <div class="progress-wrap" aria-hidden="true"><div id="confBar" class="progress-bar" style="width:0%"></div></div>
+              </div>
+            </div>
+
+            <div style="height:12px"></div>
+
+            <div id="classificationNote" style="background:#ecfdf5;border:1px solid #bbf7d0;border-radius:10px;padding:12px;color:#065f46">
+              The tumor appears to be benign with high confidence. Consult with your healthcare provider for further evaluation.
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="padding:14px">
+            <div class="justify-between" style="margin-bottom:12px">
+              <div class="flex">
+                <div class="large-icon" aria-hidden="true">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M3 12h3l2-6 3 12 2-6h3" stroke="#111" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div style="margin-left:12px">
+                  <div style="font-weight:700">Cell Impact Analysis</div>
+                  <div class="small muted">Effect on surrounding tissue</div>
+                </div>
+              </div>
+              <div id="cellIconArea"></div>
+            </div>
+
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+              <div style="flex:1">
+                <div class="small muted">Surrounding Cells Affected</div>
+                <div id="cellsAffectedText" style="font-weight:700;margin-top:6px">No</div>
+              </div>
+              <div style="width:220px">
+                <div class="small muted" style="display:flex;justify-content:space-between"><span>Impact Level</span><span id="impactPercent" class="small">15%</span></div>
+                <div style="height:8px"></div>
+                <div class="progress-wrap"><div id="impactBar" class="progress-bar" style="width:0%;background:#0ea5a1"></div></div>
+              </div>
+            </div>
+
+            <div style="height:12px"></div>
+
+            <div style="background:#eff6ff;border:1px solid #dbeafe;border-radius:10px;padding:12px;color:#024577">
+              Minimal impact detected on surrounding tissue. The tumor appears to be well-contained.
+            </div>
+          </div>
         </div>
       </div>
-    </section>
-  </main>
 
-  <script src="assets/js/app.js" defer></script>
+      <aside>
+        <div class="card sticky">
+          <h3 style="margin:0 0 10px">Summary</h3>
+
+          <div class="section">
+            <div class="summary-row"><span class="muted">Tumor Type</span><span id="sumType" class="good">Benign</span></div>
+            <div class="summary-row"><span class="muted">Location</span><span id="sumLocation">Frontal Lobe</span></div>
+            <div class="summary-row"><span class="muted">Size</span><span id="sumSize">2.3 cm</span></div>
+            <div class="summary-row"><span class="muted">Confidence</span><span id="sumConfidence" style="color:var(--blue)">94%</span></div>
+            <div class="summary-row"><span class="muted">Cells Affected</span><span id="sumCells" class="good">No</span></div>
+          </div>
+
+          <div class="section" style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn primary" id="downloadBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 10l5-5 5 5" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 5v14" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Download Report
+            </button>
+
+            <a href="#history" style="text-decoration:none">
+              <button class="btn ghost" id="viewHistoryBtn">View History</button>
+            </a>
+          </div>
+
+          <div style="height:8px"></div>
+          <div class="small muted">This is a demo. For clinical decisions, consult a specialist.</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
   <script>
-    window.addEventListener('load', () => {
-      renderResultsUI(currentResult);
+    const results = {
+      tumorType: 'Benign',
+      confidence: 94,
+      location: 'Frontal Lobe',
+      size: '2.3 cm',
+      cellsAffected: false,
+      impactLevel: 15,
+      imageUrl: 'https://images.unsplash.com/photo-1758691463569-66de91d76452?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080'
+    };
+
+    const previewImg = document.getElementById('previewImg');
+    const locationBadge = document.getElementById('locationBadge');
+
+    const typeIconArea = document.getElementById('typeIconArea');
+    const tumorTypeText = document.getElementById('tumorTypeText');
+    const confBar = document.getElementById('confBar');
+    const confPercent = document.getElementById('confPercent');
+
+    const cellIconArea = document.getElementById('cellIconArea');
+    const cellsAffectedText = document.getElementById('cellsAffectedText');
+    const impactBar = document.getElementById('impactBar');
+    const impactPercent = document.getElementById('impactPercent');
+
+    const sumType = document.getElementById('sumType');
+    const sumLocation = document.getElementById('sumLocation');
+    const sumSize = document.getElementById('sumSize');
+    const sumConfidence = document.getElementById('sumConfidence');
+    const sumCells = document.getElementById('sumCells');
+
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    function init() {
+      previewImg.src = results.imageUrl;
+      locationBadge.textContent = results.location;
+
+      tumorTypeText.textContent = results.tumorType;
+      confPercent.textContent = results.confidence + '%';
+      setTimeout(()=> confBar.style.width = results.confidence + '%', 100);
+
+      if (results.tumorType.toLowerCase() === 'benign') {
+        typeIconArea.innerHTML = '<svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#16a34a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        sumType.className = 'good';
+      } else {
+        typeIconArea.innerHTML = '<svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#dc2626" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        sumType.className = 'bad';
+      }
+
+      cellsAffectedText.textContent = results.cellsAffected ? 'Yes' : 'No';
+      impactPercent.textContent = results.impactLevel + '%';
+      setTimeout(()=> impactBar.style.width = results.impactLevel + '%', 120);
+
+      if (results.cellsAffected) {
+        cellIconArea.innerHTML = '<svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#dc2626" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        sumCells.className = 'bad';
+      } else {
+        cellIconArea.innerHTML = '<svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#16a34a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        sumCells.className = 'good';
+      }
+
+      sumLocation.textContent = results.location;
+      sumSize.textContent = results.size;
+      sumConfidence.textContent = results.confidence + '%';
+    }
+
+    downloadBtn.addEventListener('click', ()=> {
+      const now = new Date().toISOString();
+      const report = {
+        id: 'report-1',
+        generatedAt: now,
+        tumorType: results.tumorType,
+        confidence: results.confidence,
+        location: results.location,
+        size: results.size,
+        cellsAffected: results.cellsAffected,
+        impactLevel: results.impactLevel
+      };
+
+      const text = [
+        'Brain MRI Analysis Report',
+        'Generated: ' + now,
+        '----------------------------------------',
+        `Tumor Type: ${report.tumorType}`,
+        `Confidence: ${report.confidence}%`,
+        `Location: ${report.location}`,
+        `Size: ${report.size}`,
+        `Cells Affected: ${report.cellsAffected ? 'Yes' : 'No'}`,
+        `Impact Level: ${report.impactLevel}%`,
+        '',
+        'Notes: This report is simulated and for demo only. Consult a specialist for clinical interpretation.'
+      ].join('\\n');
+
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `brain-report-${(new Date()).toISOString().split('T')[0]}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
     });
+
+    previewImg.addEventListener('error', ()=> {
+      previewImg.src = '';
+      previewImg.alt = 'Image failed to load';
+    });
+
+    init();
   </script>
 </body>
 </html>
-
