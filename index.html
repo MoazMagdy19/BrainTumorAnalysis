@@ -1,72 +1,86 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Brain — MRI AI Platform </title>
-  <link rel="stylesheet" href="assets/css/style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brain Tumor Detection</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
-  <header class="site-header">
-    <div class="container header-inner">
-      <a href="index.html" class="logo">NeuroSight</a>
-      <nav class="nav">
-        <a href="index.html">Home</a>
-        <a href="scan.html">Scan</a>
-        <a href="history.html">History</a>
-        <a href="about.html">About</a>
-      </nav>
+
+  
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <img src="Screenshot 2025-11-20 111922.png" alt="Brain Logo" />
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="scan.html">Scan</a></li>
+        <li><a href="history.html">History</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
     </div>
-  </header>
+  </nav>
 
-  <main id="app" class="container">
-    <section id="home" class="page">
-      <section class="hero card">
-        <div class="hero-inner">
-          <div class="hero-logo" aria-hidden="true">
-            <svg width="44" height="44" viewBox="0 0 24 24" fill="none"><path d="M4 12c0-3.3 2.7-6 6-6s6 2.7 6 6v4H4v-4z" fill="white"/></svg>
-          </div>
-          <h1>Brain</h1>
-          <p class="lead">AI-powered platform for detecting brain tumors and analyzing cell impact.</p>
-          <a href="scan.html" class="btn primary">Start Scan</a>
-        </div>
-      </section>
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-icon">
+        <img src="Screenshot 2025-11-20 111922.png" alt="Brain Icon" class="brain-img" />
+      </div>
 
-      <section class="card gallery-section">
-        <h2>Sample MRI Scans</h2>
-        <div id="sampleGallery" class="gallery-grid"></div>
-      </section>
+      <h1 class="title">Brain</h1>
 
-      <section class="card features-section">
-        <h2>How Brain Works</h2>
-        <div class="features-grid" id="featuresGrid"></div>
-      </section>
+      <p class="subtitle">
+        AI-powered platform for detecting brain tumors and analyzing cell impact.
+      </p>
 
-      <section class="card cta-section">
-        <h2>Ready to Analyze Your MRI Scan?</h2>
-        <p class="lead">Upload or capture your brain MRI scan and get AI-powered analysis.</p>
-        <a href="scan.html" class="btn outline">Get Started</a>
-      </section>
-    </section>
-  </main>
-
- 
-  <div id="historyModal" class="modal" role="dialog" aria-hidden="true">
-    <div class="modal-card">
-      <button id="modalClose" class="modal-close">✕</button>
-      <img id="modalImg" src="" alt="Scan large"/>
-      <div id="modalInfo" class="modal-info"></div>
+      <a href="scan.html">
+        <button class="btn primary">Start Scan</button>
+      </a>
     </div>
-  </div>
+  </section>
 
-  <script src="assets/js/app.js" defer></script>
-  <script>
-    window.addEventListener('load', () => {
-      renderHomeSections();
-      animateStats();
-    });
-  </script>
+  <section class="gallery">
+    <h2 class="section-title">Sample MRI Scans</h2>
+
+    <div class="gallery-container" id="gallery"></div>
+  </section>
+
+  <section class="features">
+    <h2 class="section-title">How Brain Works</h2>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Accurate Tumor Detection</h3>
+        <p>Advanced AI algorithms precisely identify tumor locations in brain MRI scans</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <h3>Benign / Malignant Classification</h3>
+        <p>Classify tumors with high confidence to assist in treatment planning</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Cell Impact Analysis</h3>
+        <p>Analyze whether surrounding brain cells are affected by the tumor</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2>Ready to Analyze Your MRI Scan?</h2>
+    <p>Upload your brain MRI scan and get instant AI-powered analysis with detailed results.</p>
+
+    <a href="scan.html">
+      <button class="btn outline">Get Started</button>
+    </a>
+  </section>
+
+  <script src="script.js"></script>
 </body>
 </html>
-
-
