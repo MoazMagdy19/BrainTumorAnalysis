@@ -1,62 +1,222 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Brain — MRI AI Platform </title>
-  <link rel="stylesheet" href="assets/css/style.css" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Scan History — Single File</title>
+<style>
+  :root{
+    --blue:#2563eb;
+    --bg:#f6f8fb;
+    --card:#ffffff;
+    --muted:#6b7280;
+    --success:#16a34a;
+    --danger:#dc2626;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,ui-sans-serif,system-ui, -apple-system,"Segoe UI",Roboto,Arial;background:var(--bg);color:#0f172a}
+  .wrap{max-width:900px;margin:36px auto;padding:20px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+  .title-area{display:flex;gap:12px;align-items:center}
+  .icon-circle{width:56px;height:56px;border-radius:12px;background:linear-gradient(180deg,var(--blue),#1e40af);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 8px 24px rgba(37,99,235,0.12)}
+  h1{margin:0;font-size:20px}
+  p.lead{margin:4px 0 0;color:var(--muted)}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;border:0;cursor:pointer;font-weight:600}
+  .btn.primary{background:var(--blue);color:#fff}
+  .list{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+  .item{background:var(--card);padding:12px;border-radius:12px;display:flex;gap:12px;align-items:center;box-shadow:0 8px 20px rgba(2,6,23,0.04);cursor:pointer;transition:transform .12s,box-shadow .12s}
+  .item:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(2,6,23,0.06)}
+  .thumb{width:92px;height:72px;border-radius:8px;object-fit:cover;border:1px solid #eef2ff;flex-shrink:0}
+  .meta{flex:1;display:flex;flex-direction:column}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .muted{color:var(--muted);font-size:13px}
+  .badge{padding:6px 8px;border-radius:999px;font-weight:700;font-size:13px}
+  .badge.good{background:rgba(22,163,74,0.12);color:var(--success)}
+  .badge.bad{background:rgba(220,38,38,0.08);color:var(--danger)}
+  .empty{background:transparent;text-align:center;padding:36px;border-radius:12px;color:var(--muted)}
+  .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.5);z-index:999;padding:20px}
+  .modal.show{display:flex}
+  .card{background:var(--card);max-width:880px;width:100%;border-radius:12px;padding:16px;display:flex;gap:14px;align-items:flex-start}
+  .card img{width:320px;height:220px;object-fit:cover;border-radius:8px}
+  .card .info{flex:1}
+  .close{margin-left:auto;background:#fff;border-radius:999px;padding:6px 8px;border:1px solid #eee;cursor:pointer}
+  @media(max-width:800px){
+    .card{flex-direction:column}
+    .card img{width:100%;height:260px}
+  }
+</style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="container header-inner">
-      <a href="index.html" class="logo">NeuroSight</a>
-      <nav class="nav">
-        <a href="index.html">Home</a>
-        <a href="scan.html">Scan</a>
-        <a href="history.html">History</a>
-        <a href="about.html">About</a>
-      </nav>
-    </div>
-  </header>
-
-  <main id="app" class="container">
-    <section id="history" class="page">
-      <div class="card">
-        <div class="header-row">
-          <div>
-            <h2>Scan History</h2>
-            <p class="muted">View all your previous MRI scan analyses</p>
-          </div>
-          <a href="scan.html" class="btn primary">+ New Scan</a>
+  <div class="wrap">
+    <header>
+      <div class="title-area">
+        <div class="icon-circle" aria-hidden="true">
+        
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M3 3v6h6" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12A9 9 0 1 1 12 3v3" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-
-        <div id="historyList" class="history-list"></div>
-
-        <template id="emptyHistoryTpl">
-          <div class="empty-state">
-            <h3>No scans yet</h3>
-            <p class="muted">Start by uploading your first MRI scan</p>
-            <a href="scan.html" class="btn primary">Upload Scan</a>
-          </div>
-        </template>
+        <div>
+          <h1>Scan History</h1>
+          <p class="lead">View all your previous MRI scan analyses</p>
+        </div>
       </div>
-    </section>
-  </main>
 
-  <div id="historyModal" class="modal" role="dialog" aria-hidden="true">
-    <div class="modal-card">
-      <button id="modalClose" class="modal-close">✕</button>
-      <img id="modalImg" src="" alt="Scan large"/>
-      <div id="modalInfo" class="modal-info"></div>
+      <div>
+        <a href="#scan" class="btn primary" id="newScanBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          New Scan
+        </a>
+      </div>
+    </header>
+
+    <main>
+      <div id="listContainer" class="list" aria-live="polite"></div>
+
+      <template id="emptyTpl">
+        <div class="empty">
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" style="opacity:0.25"><path d="M3 3v6h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12A9 9 0 1 1 12 3v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h3 style="margin:8px 0 4px;color:var(--muted)">No scans yet</h3>
+          <p class="muted">Start by uploading your first MRI scan</p>
+          <div style="height:12px"></div>
+          <a href="#scan" class="btn primary">Upload Scan</a>
+        </div>
+      </template>
+
+    </main>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="card" role="document">
+      <img id="modalImg" src="" alt="Scan image"/>
+      <div class="info">
+        <h3 id="modalType">Tumor Type</h3>
+        <p id="modalDate" class="muted">Date</p>
+        <div style="height:8px"></div>
+        <div id="modalConfidence" style="font-weight:700"></div>
+        <div style="height:10px"></div>
+        <p class="muted" id="modalNotes">Notes and recommendations (simulated)</p>
+        <div style="height:12px"></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" id="closeBtn">Close</button>
+          <button class="btn primary" id="gotoScan">New Scan</button>
+        </div>
+      </div>
+      <button class="close" id="xClose" aria-label="Close">✕</button>
     </div>
   </div>
 
-  <script src="assets/js/app.js" defer></script>
-  <script>
-    window.addEventListener('load', () => {
-      renderHistory();
+<script>
+  const historyData = [
+    {
+      id: '1',
+      imageUrl: 'https://images.unsplash.com/photo-1758691463569-66de91d76452?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+      tumorType: 'Benign',
+      confidence: 94,
+      date: 'November 16, 2025',
+    },
+    {
+      id: '2',
+      imageUrl: 'https://images.unsplash.com/photo-1612836696857-bf3d0eab59a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+      tumorType: 'Benign',
+      confidence: 87,
+      date: 'November 10, 2025',
+    },
+    {
+      id: '3',
+      imageUrl: 'https://images.unsplash.com/photo-1549925245-f20a1bac6454?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+      tumorType: 'Malignant',
+      confidence: 92,
+      date: 'November 3, 2025',
+    },
+    {
+      id: '4',
+      imageUrl: 'https://images.unsplash.com/photo-1606206873764-fd15e242df52?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+      tumorType: 'Benign',
+      confidence: 96,
+      date: 'October 28, 2025',
+    },
+  ];
+
+  const listContainer = document.getElementById('listContainer');
+  const emptyTpl = document.getElementById('emptyTpl').content;
+  const modal = document.getElementById('modal');
+  const modalImg = document.getElementById('modalImg');
+  const modalType = document.getElementById('modalType');
+  const modalDate = document.getElementById('modalDate');
+  const modalConfidence = document.getElementById('modalConfidence');
+  const modalNotes = document.getElementById('modalNotes');
+  const closeBtn = document.getElementById('closeBtn');
+  const xClose = document.getElementById('xClose');
+  const gotoScan = document.getElementById('gotoScan');
+
+  function renderList(data){
+    listContainer.innerHTML = '';
+    if(!data || data.length === 0){
+      listContainer.appendChild(document.importNode(emptyTpl,true));
+      return;
+    }
+
+    data.forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'item';
+      el.tabIndex = 0;
+      el.setAttribute('role','button');
+      el.innerHTML = `
+        <img class="thumb" src="${item.imageUrl}" alt="scan ${item.id}" />
+        <div class="meta">
+          <div class="row">
+            <div>
+              <div style="font-weight:700">${item.tumorType}</div>
+              <div class="muted" style="margin-top:4px">${item.date}</div>
+            </div>
+            <div style="text-align:right">
+              <div class="badge ${item.tumorType.toLowerCase().includes('malignant') ? 'bad' : 'good'}">
+                ${item.confidence}%
+              </div>
+              <div class="muted" style="margin-top:6px;font-size:13px">Confidence</div>
+            </div>
+          </div>
+        </div>
+      `;
+      el.addEventListener('click', ()=> openModal(item));
+      el.addEventListener('keydown', (e)=> { if(e.key === 'Enter' || e.key === ' ') openModal(item); });
+      listContainer.appendChild(el);
     });
-  </script>
+  }
+
+  function openModal(item){
+    modalImg.src = item.imageUrl;
+    modalType.textContent = item.tumorType;
+    modalDate.textContent = item.date;
+    modalConfidence.textContent = `Confidence: ${item.confidence}%`;
+    modalNotes.textContent = item.tumorType.toLowerCase().includes('malignant')
+      ? 'Malignant features detected — urgent follow-up recommended (simulated).'
+      : 'No aggressive features detected — follow clinician guidance (simulated).';
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal(){
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+
+  closeBtn.addEventListener('click', closeModal);
+  xClose.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e)=> { if(e.target === modal) closeModal(); });
+  document.addEventListener('keydown', (e)=> { if(e.key === 'Escape') closeModal(); });
+
+  gotoScan.addEventListener('click', ()=> {
+    const el = document.querySelector('[href="#scan"]');
+    if(el) el.click();
+    closeModal();
+  });
+
+  renderList(historyData);
+
+ 
+</script>
 </body>
 </html>
-
