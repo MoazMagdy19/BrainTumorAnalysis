@@ -1,99 +1,326 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Brain — MRI AI Platform </title>
-  <link rel="stylesheet" href="assets/css/style.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Scan — Single File Demo</title>
+  <style>
+    :root{
+      --blue:#2563eb;
+      --bg:#f6f8fb;
+      --card:#ffffff;
+      --muted:#6b7280;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:var(--bg);color:#111}
+    .wrap{max-width:1100px;margin:36px auto;padding:20px}
+    .grid{display:grid;gap:20px;grid-template-columns:1fr 1fr}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+    .card{background:var(--card);padding:18px;border-radius:14px;box-shadow:0 6px 18px rgba(2,6,23,0.06)}
+    h1{margin:0 0 6px;font-size:22px;color:#111}
+    p.lead{margin:0 0 12px;color:var(--muted)}
+    .area{
+      border:2px dashed #e6eefb;border-radius:12px;padding:18px;text-align:center;cursor:pointer;
+      transition:border-color .15s, background .15s;
+      background:linear-gradient(180deg, rgba(37,99,235,0.02), transparent);
+    }
+    .area.dragover{border-color:var(--blue);background:rgba(37,99,235,0.03)}
+    .controls{display:flex;gap:10px;margin-top:12px}
+    button.btn{border:0;padding:10px 16px;border-radius:999px;font-weight:600;cursor:pointer}
+    .btn.primary{background:var(--blue);color:#fff}
+    .btn.ghost{background:transparent;border:1px solid #e5e7eb;color:#111}
+    .video-wrap{background:#111;border-radius:10px;overflow:hidden;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;color:#fff}
+    video#preview{width:100%;height:100%;object-fit:cover;display:block}
+    .placeholder{color:rgba(255,255,255,0.6);padding:18px;text-align:center}
+    .meta{margin-top:12px;display:flex;align-items:center;gap:12px}
+    .thumb{width:84px;height:84px;border-radius:8px;object-fit:cover;border:1px solid #eef2ff}
+    .file-name{font-size:14px;color:#111}
+    .muted{color:var(--muted);font-size:13px}
+    .analyze-wrap{text-align:center;margin-top:14px}
+    button[disabled]{opacity:0.5;cursor:not-allowed}
+
+    .overlay{
+      position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.45);z-index:999;
+    }
+    .overlay.show{display:flex}
+    .loader{
+      width:140px;height:140px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;padding:18px;box-shadow:0 14px 40px rgba(2,6,23,0.25)
+    }
+    .spinner{
+      width:48px;height:48px;border-radius:50%;border:4px solid #e6eefb;border-top-color:var(--blue);animation:spin 1s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+  
+    .results{display:none;margin-top:20px}
+    .results.show{display:block}
+    .result-card{padding:16px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfdff);box-shadow:0 8px 24px rgba(2,6,23,0.04)}
+    .detected{color:#dc2626;font-weight:700}
+  </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="container header-inner">
-      <a href="index.html" class="logo">NeuroSight</a>
-      <nav class="nav">
-        <a href="index.html">Home</a>
-        <a href="scan.html">Scan</a>
-        <a href="history.html">History</a>
-        <a href="about.html">About</a>
-      </nav>
-    </div>
-  </header>
+  <div class="wrap">
+    <h1>Upload MRI Scan</h1>
+    <p class="lead">Capture a photo or upload an MRI scan image. (Demo — no real AI)</p>
 
-  <main id="app" class="container">
-    <section id="scan" class="page">
+    <div class="grid">
       <div class="card">
-        <h2>Upload MRI Scan</h2>
-        <p class="lead">Capture a photo or upload an MRI scan image. (Demo — no real AI)</p>
-
-        <div class="grid two-col">
-          <div class="card-inner">
-            <div class="section-title">Camera Capture</div>
-            <div class="video-wrap" id="videoWrap">
-              <div class="video-placeholder" id="videoPlaceholder">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none"><path d="M4 7h11v10H4z" stroke="#bbb" stroke-width="1.4"/></svg>
-                <div>Camera preview will appear here</div>
-              </div>
-              <video id="preview" autoplay playsinline style="display:none"></video>
-            </div>
-
-            <div class="controls">
-              <button id="startBtn" class="btn primary">Start Camera</button>
-              <button id="captureBtn" class="btn ghost" disabled>Capture Photo</button>
-              <button id="stopBtn" class="btn ghost" disabled>Stop</button>
-            </div>
-
-            <div id="cameraMeta" class="meta" style="display:none">
-              <img id="capturedThumb" class="thumb" alt="Captured preview"/>
-              <div>
-                <div id="capturedName">captured-mri.jpg</div>
-                <div class="muted">Captured from camera</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card-inner">
-            <div class="section-title">Upload / Drag & Drop</div>
-            <div id="dropArea" class="area" tabindex="0" role="button" aria-label="Upload or drag and drop file">
-              <div>
-                <svg width="56" height="56" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="#2563eb" stroke-width="1.6"/><path d="M7 10l5-5 5 5" stroke="#2563eb" stroke-width="1.6"/></svg>
-                <div style="margin-top:10px;font-weight:600">Drag & drop your MRI scan here</div>
-                <div class="muted" style="margin-top:6px">or click to browse</div>
-              </div>
-            </div>
-
-            <input id="fileInput" type="file" accept="image/*,.dcm" style="display:none"/>
-
-            <div class="meta" id="uploadMeta" style="display:none">
-              <img class="thumb" id="uploadThumb" alt="Upload preview"/>
-              <div>
-                <div id="uploadName" class="file-name"></div>
-                <div class="muted">Uploaded file</div>
-              </div>
-            </div>
-
-            <div class="controls" style="margin-top:12px">
-              <button id="browseBtn" class="btn ghost">Browse Files</button>
-              <button id="clearBtn" class="btn ghost" style="display:none">Clear</button>
-            </div>
-          </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <strong>Camera Capture</strong>
+          <small class="muted">Allow camera access</small>
         </div>
 
-        <div class="analyze-wrap" style="text-align:center;margin-top:16px">
-          <button id="analyzeBtn" class="btn primary" disabled>Analyze Scan</button>
-          <div class="muted" style="margin-top:6px">Analysis is simulated in this demo.</div>
+        <div style="height:14px"></div>
+
+        <div class="video-wrap" id="videoWrap" aria-live="polite">
+          <div class="placeholder" id="videoPlaceholder">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" style="opacity:0.9"><path d="M4 7h11v10H4z" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 7v10l-3-2V9l3-2z" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div style="margin-top:8px">Camera preview will appear here</div>
+          </div>
+          <video id="preview" autoplay playsinline style="display:none"></video>
         </div>
 
-        <div id="scanResult" style="margin-top:18px"></div>
+        <div class="controls" style="margin-top:12px">
+          <button class="btn primary" id="startBtn">Start Camera</button>
+          <button class="btn ghost" id="captureBtn" disabled>Capture Photo</button>
+          <button class="btn ghost" id="stopBtn" disabled>Stop</button>
+        </div>
+
+        <div class="meta" id="cameraMeta" style="display:none">
+          <img class="thumb" id="capturedThumb" alt="Captured preview" />
+          <div>
+            <div class="file-name" id="capturedName">captured-mri.jpg</div>
+            <div class="muted">Captured from camera — click Analyze or upload another file to replace</div>
+          </div>
+        </div>
       </div>
-    </section>
-  </main>
 
-  <script src="assets/js/app.js" defer></script>
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <strong>Upload / Drag & Drop</strong>
+          <small class="muted">JPG, PNG, DICOM (simulated)</small>
+        </div>
+
+        <div style="height:14px"></div>
+
+        <div id="dropArea" class="area" tabindex="0" role="button" aria-label="Upload or drag and drop file">
+          <div id="dropInner">
+            <svg width="56" height="56" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 10l5-5 5 5" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 5v14" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div style="margin-top:10px;font-weight:600">Drag & drop your MRI scan here</div>
+            <div class="muted" style="margin-top:6px">or click to browse</div>
+          </div>
+        </div>
+
+        <input id="fileInput" type="file" accept="image/*,.dcm" style="display:none" />
+
+        <div class="meta" id="uploadMeta" style="display:none">
+          <img class="thumb" id="uploadThumb" alt="Upload preview" />
+          <div>
+            <div class="file-name" id="uploadName"></div>
+            <div class="muted" id="uploadInfo">Uploaded file — click Analyze or replace</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px; display:flex; gap:10px;">
+          <button class="btn ghost" id="browseBtn">Browse Files</button>
+          <button class="btn ghost" id="clearBtn" style="margin-left:auto; display:none">Clear</button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="analyze-wrap">
+      <button class="btn primary" id="analyzeBtn" disabled style="padding:14px 28px;font-size:16px">Analyze Scan</button>
+      <div style="height:8px"></div>
+      <div class="muted">Analysis is simulated in this demo.</div>
+    </div>
+
+    <div class="results" id="results">
+      <div style="height:20px"></div>
+      <div class="result-card">
+        <h3>Analysis Results</h3>
+        <p class="muted" id="resultSummary">Processing result summary will appear here.</p>
+        <div style="height:12px"></div>
+        <div id="details"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="loader" role="status" aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <div>Analyzing scan...</div>
+      <div class="muted" style="font-size:13px">This is a simulated analysis (demo)</div>
+    </div>
+  </div>
+
   <script>
-    window.addEventListener('load', () => {
-      initScanModule();
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const captureBtn = document.getElementById('captureBtn');
+    const preview = document.getElementById('preview');
+    const videoPlaceholder = document.getElementById('videoPlaceholder');
+    const videoWrap = document.getElementById('videoWrap');
+    const cameraMeta = document.getElementById('cameraMeta');
+    const capturedThumb = document.getElementById('capturedThumb');
+
+    const dropArea = document.getElementById('dropArea');
+    const fileInput = document.getElementById('fileInput');
+    const browseBtn = document.getElementById('browseBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const uploadMeta = document.getElementById('uploadMeta');
+    const uploadThumb = document.getElementById('uploadThumb');
+    const uploadName = document.getElementById('uploadName');
+
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const overlay = document.getElementById('overlay');
+
+    const results = document.getElementById('results');
+    const resultSummary = document.getElementById('resultSummary');
+    const details = document.getElementById('details');
+
+    
+    let stream = null;
+    let currentFile = null; 
+
+    function enableAnalyzeIfReady(){
+      analyzeBtn.disabled = !currentFile;
+    }
+
+    function showUploadPreview(file, thumbEl, nameEl, metaEl){
+      const reader = new FileReader();
+      reader.onload = function(e){
+        thumbEl.src = e.target.result;
+        metaEl.style.display = 'flex';
+      };
+      reader.readAsDataURL(file);
+      nameEl.textContent = file.name || 'image';
+    }
+
+    startBtn.addEventListener('click', async () => {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        preview.srcObject = stream;
+        preview.style.display = 'block';
+        videoPlaceholder.style.display = 'none';
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        captureBtn.disabled = false;
+      } catch (err) {
+        console.error('camera error', err);
+        alert('Unable to access camera. Check permissions and try again.');
+      }
     });
+
+    stopBtn.addEventListener('click', () => {
+      if (stream) {
+        stream.getTracks().forEach(t => t.stop());
+        stream = null;
+      }
+      preview.srcObject = null;
+      preview.style.display = 'none';
+      videoPlaceholder.style.display = 'block';
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+      captureBtn.disabled = true;
+    });
+
+    captureBtn.addEventListener('click', () => {
+      if (!preview || !preview.videoWidth) return alert('Camera not ready');
+      const canvas = document.createElement('canvas');
+      canvas.width = preview.videoWidth;
+      canvas.height = preview.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(preview, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob(blob => {
+        if (!blob) return;
+        const file = new File([blob], 'captured-mri.jpg', { type: 'image/jpeg' });
+        currentFile = file;
+        showUploadPreview(file, capturedThumb, document.getElementById('capturedName') || uploadName, cameraMeta);
+        
+        showUploadPreview(file, uploadThumb, uploadName, uploadMeta);
+        clearBtn.style.display = 'inline-block';
+        enableAnalyzeIfReady();
+        
+        if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+        preview.srcObject = null;
+        preview.style.display = 'none';
+        videoPlaceholder.style.display = 'block';
+        startBtn.disabled = false; stopBtn.disabled = true; captureBtn.disabled = true;
+      }, 'image/jpeg', 0.92);
+    });
+
+    dropArea.addEventListener('click', ()=> fileInput.click());
+    dropArea.addEventListener('dragover', (e)=> { e.preventDefault(); dropArea.classList.add('dragover'); });
+    dropArea.addEventListener('dragleave', ()=> dropArea.classList.remove('dragover'));
+    dropArea.addEventListener('drop', (e)=> {
+      e.preventDefault(); dropArea.classList.remove('dragover');
+      const f = e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f) handleFileChosen(f);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      const f = e.target.files && e.target.files[0];
+      if (f) handleFileChosen(f);
+    });
+
+    browseBtn.addEventListener('click', ()=> fileInput.click());
+
+    clearBtn.addEventListener('click', ()=> {
+      currentFile = null;
+      uploadMeta.style.display = 'none';
+      cameraMeta.style.display = 'none';
+      clearBtn.style.display = 'none';
+      enableAnalyzeIfReady();
+    });
+
+    function handleFileChosen(file){
+      if (!file.type.startsWith('image/') && !file.name.toLowerCase().endsWith('.dcm')) {
+        alert('Unsupported file type. Please upload an image or .dcm (simulated).');
+        return;
+      }
+      currentFile = file;
+      showUploadPreview(file, uploadThumb, uploadName, uploadMeta);
+      cameraMeta.style.display = 'none';
+      clearBtn.style.display = 'inline-block';
+      enableAnalyzeIfReady();
+    }
+
+    analyzeBtn.addEventListener('click', ()=> {
+      if (!currentFile) { alert('Please upload or capture an MRI scan first.'); return; }
+      overlay.classList.add('show');
+      overlay.setAttribute('aria-hidden','false');
+
+      setTimeout(()=> {
+        overlay.classList.remove('show');
+        overlay.setAttribute('aria-hidden','true');
+
+        results.classList.add('show');
+        const probability = Math.random();
+        if (probability < 0.6) {
+          resultSummary.textContent = 'No suspicious lesions detected (simulated).';
+          details.innerHTML = `<p class="muted">Confidence: ${(0.85 + Math.random()*0.14).toFixed(2)}</p>`;
+        } else {
+          const regions = Math.floor(1 + Math.random()*3);
+          resultSummary.innerHTML = `<span class="detected">Suspicious region${regions>1?'s':''} detected</span> — consult a specialist.`;
+          let html = `<div style="margin-top:8px">Detected regions: <strong>${regions}</strong></div>`;
+          html += `<ul style="margin-top:8px;color:var(--muted)"><li>Region size: ${(5 + Math.random()*25).toFixed(1)} mm</li><li>Suggested: Follow-up MRI & histopathology</li></ul>`;
+          details.innerHTML = html;
+        }
+
+        results.scrollIntoView({behavior:'smooth', block:'center'});
+      }, 3000);
+    });
+
+    dropArea.addEventListener('keydown', (e)=> {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+    });
+
+    window.addEventListener('beforeunload', ()=> {
+      if (stream) stream.getTracks().forEach(t=>t.stop());
+    });
+
   </script>
 </body>
 </html>
-
